@@ -115,6 +115,11 @@ func (b ClusterBuilder) WithMaxUnavailable(max *int32) ClusterBuilder {
 	return b
 }
 
+func (b ClusterBuilder) WithLabels(labels map[string]string) ClusterBuilder {
+	b.cluster.Spec.Labels = labels
+	return b
+}
+
 func (b ClusterBuilder) Cr() *api.CrdbCluster {
 	cluster := b.cluster.DeepCopy()
 

@@ -43,7 +43,7 @@ func TestPublicServiceBuilder(t *testing.T) {
 		{
 			name:     "builds default public service",
 			cluster:  cluster.Cluster(),
-			selector: commonLabels.Selector(),
+			selector: commonLabels.Selector(cluster.Cr()),
 			expected: &corev1.Service{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:   "test-cluster-public",

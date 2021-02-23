@@ -19,6 +19,8 @@ metadata:
   name: test-cluster
   namespace: test-ns
 spec:
+  labels:
+    customlabel: test
   dataStore:
     emptyDir: {}
   grpcPort: 26257

@@ -78,7 +78,7 @@ func TestReconcile(t *testing.T) {
 
 			builder := resource.DiscoveryServiceBuilder{
 				Cluster:  tt.cluster,
-				Selector: commonLabels.Selector(),
+				Selector: commonLabels.Selector(tt.cluster.Unwrap()),
 			}
 
 			client := testutil.NewFakeClient(scheme, tt.existingObjs...)

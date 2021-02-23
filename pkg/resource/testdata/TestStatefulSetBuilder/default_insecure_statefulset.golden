@@ -11,6 +11,7 @@ spec:
       app.kubernetes.io/component: database
       app.kubernetes.io/instance: test-cluster
       app.kubernetes.io/name: cockroachdb
+      customlabel: test
   serviceName: test-cluster
   template:
     metadata:
@@ -19,6 +20,7 @@ spec:
         app.kubernetes.io/component: database
         app.kubernetes.io/instance: test-cluster
         app.kubernetes.io/name: cockroachdb
+        customlabel: test
     spec:
       automountServiceAccountToken: false
       serviceAccountName: "cockroach-database-sa"

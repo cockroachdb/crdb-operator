@@ -88,6 +88,10 @@ type CrdbClusterSpec struct {
 	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Data Store"
 	// +required
 	DataStore Volume `json:"dataStore,omitempty"`
+	// (Optional) Additional custom resource labels
+	// +operator-sdk:csv:customresourcedefinitions:type=spec,displayName="Map of additional custom labels"
+	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
 }
 
 // CrdbClusterStatus defines the observed state of Cluster

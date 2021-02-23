@@ -43,7 +43,7 @@ func TestDiscoveryServiceBuilder(t *testing.T) {
 		{
 			name:     "builds default discovery service",
 			cluster:  cluster.Cluster(),
-			selector: commonLabels.Selector(),
+			selector: commonLabels.Selector(cluster.Cr()),
 			expected: &corev1.Service{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:   "test-cluster",

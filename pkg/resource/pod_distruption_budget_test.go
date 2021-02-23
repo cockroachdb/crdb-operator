@@ -35,7 +35,7 @@ func TestPDBBuilder(t *testing.T) {
 	var maxUnavailable int32 = 3
 	cluster := testutil.NewBuilder("test-cluster").Namespaced("test-ns").WithMaxUnavailable(&maxUnavailable)
 	commonLabels := labels.Common(cluster.Cr())
-	selector := commonLabels.Selector()
+	selector := commonLabels.Selector(cluster.Cr())
 
 	maxUnavailableIS := intstr.FromInt(3)
 
@@ -48,7 +48,7 @@ func TestPDBBuilder(t *testing.T) {
 		{
 			name:     "builds default discovery service",
 			cluster:  cluster.Cluster(),
-			selector: commonLabels.Selector(),
+			selector: commonLabels.Selector(cluster.Cr()),
 			expected: &policy.PodDisruptionBudget{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:   "test-cluster",

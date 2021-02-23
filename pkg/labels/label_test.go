@@ -27,7 +27,9 @@ import (
 )
 
 func TestDefaultCommonLabels(t *testing.T) {
-	clusterAsPartOfApp := testutil.NewBuilder("test-cluster").Namespaced("test-ns").Cr()
+	clusterAsPartOfApp := testutil.NewBuilder("test-cluster").Namespaced("test-ns").
+		WithLabels(map[string]string{"customlabel": "test"}).
+		Cr()
 
 	expected := map[string]string{
 		"app.kubernetes.io/name":       "cockroachdb",
@@ -35,6 +37,7 @@ func TestDefaultCommonLabels(t *testing.T) {
 		"app.kubernetes.io/component":  "database",
 		"app.kubernetes.io/part-of":    "cockroachdb",
 		"app.kubernetes.io/managed-by": "cockroach-operator",
+		"customlabel":                  "test",
 	}
 
 	actual := labels.Common(clusterAsPartOfApp).AsMap()
@@ -107,5 +110,5 @@ func TestSelector(t *testing.T) {
 		"app.kubernetes.io/component": "database",
 	}
 
-	assert.Equal(t, expected, labels.Common(cr).Selector())
+	assert.Equal(t, expected, labels.Common(cr).Selector(cr))
 }

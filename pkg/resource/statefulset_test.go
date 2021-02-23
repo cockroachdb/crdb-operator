@@ -66,7 +66,7 @@ func TestStatefulSetBuilder(t *testing.T) {
 
 			err := resource.StatefulSetBuilder{
 				Cluster:  &cluster,
-				Selector: commonLabels.Selector(),
+				Selector: commonLabels.Selector(cr),
 			}.Build(actual)
 			require.NoError(t, err)
 

@@ -111,7 +111,8 @@ func TestCreatesInsecureCluster(t *testing.T) {
 	sb := testenv.NewDiffingSandbox(t, env)
 	sb.StartManager(t, controller.InitClusterReconcilerWithLogger(testLog))
 
-	b := testutil.NewBuilder("crdb").WithNodeCount(3).WithEmptyDirDataStore()
+	b := testutil.NewBuilder("crdb").WithNodeCount(3).WithEmptyDirDataStore().
+		WithLabels(map[string]string{"customlabel": "Test"})
 
 	create := Step{
 		name: "creates 3-node insecure cluster",
@@ -146,7 +147,8 @@ func TestCreatesSecureClusterWithGeneratedCert(t *testing.T) {
 	sb := testenv.NewDiffingSandbox(t, env)
 	sb.StartManager(t, controller.InitClusterReconcilerWithLogger(testLog))
 
-	b := testutil.NewBuilder("crdb").WithNodeCount(1).WithTLS().WithEmptyDirDataStore()
+	b := testutil.NewBuilder("crdb").WithNodeCount(1).WithTLS().WithEmptyDirDataStore().
+		WithLabels(map[string]string{"customlabel": "Test"})
 
 	create := Step{
 		name: "creates 1-node secure cluster",
@@ -183,7 +185,8 @@ func TestCreatesSecureClusterWithGeneratedCertCRv20(t *testing.T) {
 
 	builder := testutil.NewBuilder("crdb").WithNodeCount(3).WithTLS().
 		WithImage("cockroachdb/cockroach:v20.1.6").
-		WithPVDataStore("1Gi", "standard" /* default storage class in KIND */)
+		WithPVDataStore("1Gi", "standard" /* default storage class in KIND */).
+		WithLabels(map[string]string{"customlabel": "Test"})
 
 	create := Step{
 		name: "creates 3-node secure cluster with v20.1.6",

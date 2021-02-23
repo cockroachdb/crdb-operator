@@ -9,6 +9,8 @@ spec:
     supportsAutoResize: false
   image:
     name: cockroachdb/cockroach:v19.2.6
+  labels:
+    customlabel: Test
   nodes: 3
   resources: {}
 
@@ -21,6 +23,7 @@ metadata:
     app.kubernetes.io/instance: crdb
     app.kubernetes.io/name: cockroachdb
     statefulset.kubernetes.io/pod-name: crdb-0
+    customlabel: Test
   name: crdb-0
 spec:
   automountServiceAccountToken: false
@@ -113,6 +116,7 @@ metadata:
     app.kubernetes.io/instance: crdb
     app.kubernetes.io/name: cockroachdb
     statefulset.kubernetes.io/pod-name: crdb-1
+    customlabel: Test
   name: crdb-1
 spec:
   automountServiceAccountToken: false
@@ -205,6 +209,7 @@ metadata:
     app.kubernetes.io/instance: crdb
     app.kubernetes.io/name: cockroachdb
     statefulset.kubernetes.io/pod-name: crdb-2
+    customlabel: Test
   name: crdb-2
 spec:
   automountServiceAccountToken: false
@@ -298,6 +303,7 @@ metadata:
     app.kubernetes.io/managed-by: cockroach-operator
     app.kubernetes.io/name: cockroachdb
     app.kubernetes.io/part-of: cockroachdb
+    customlabel: Test
   name: crdb
 spec:
   maxUnavailable: 1
@@ -306,6 +312,7 @@ spec:
       app.kubernetes.io/component: database
       app.kubernetes.io/instance: crdb
       app.kubernetes.io/name: cockroachdb
+      customlabel: Test
 
 ---
 apiVersion: v1
@@ -321,6 +328,7 @@ metadata:
     app.kubernetes.io/managed-by: cockroach-operator
     app.kubernetes.io/name: cockroachdb
     app.kubernetes.io/part-of: cockroachdb
+    customlabel: Test
   name: crdb
 spec:
   clusterIP: None
@@ -351,6 +359,7 @@ metadata:
     app.kubernetes.io/managed-by: cockroach-operator
     app.kubernetes.io/name: cockroachdb
     app.kubernetes.io/part-of: cockroachdb
+    customlabel: Test
   name: crdb-public
 spec:
   clusterIP: '[some_ip]'
@@ -380,6 +389,7 @@ metadata:
     app.kubernetes.io/managed-by: cockroach-operator
     app.kubernetes.io/name: cockroachdb
     app.kubernetes.io/part-of: cockroachdb
+    customlabel: Test
   name: crdb
 spec:
   podManagementPolicy: OrderedReady
@@ -390,6 +400,7 @@ spec:
       app.kubernetes.io/component: database
       app.kubernetes.io/instance: crdb
       app.kubernetes.io/name: cockroachdb
+      customlabel: Test
   serviceName: crdb
   template:
     metadata:
@@ -398,6 +409,7 @@ spec:
         app.kubernetes.io/component: database
         app.kubernetes.io/instance: crdb
         app.kubernetes.io/name: cockroachdb
+        customlabel: Test
     spec:
       automountServiceAccountToken: false
       containers:
