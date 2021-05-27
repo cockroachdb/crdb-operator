@@ -70,30 +70,28 @@ func RequireClusterToBeReadyEventuallyTimeout(t *testing.T, sb testenv.DiffingSa
 		}
 		return true, nil
 	})
-	require.NoError(t, err)
-}
 
-func requireClusterToBeReadyEventually(t *testing.T, sb testenv.DiffingSandbox, b testutil.ClusterBuilder) {
-	cluster := b.Cluster()
-
-	err := wait.Poll(10*time.Second, 60*time.Second, func() (bool, error) {
-
+	if err != nil {
 		ss, err := fetchStatefulSet(sb, cluster.StatefulSetName())
 		if err != nil {
-			t.Logf("error fetching stateful set")
-			return false, err
+			t.Logf("error fetching stateful set and not logging pods")
 		}
 
 		if ss == nil {
-			t.Logf("stateful set is not found")
-			return false, nil
+			t.Logf("stateful set is not found and not logging pods")
 		}
+
 		if !statefulSetIsReady(ss) {
-			t.Logf("stateful set is not ready")
-			return false, nil
+			t.Logf("stateful set is not ready logging pods")
 		}
-		return true, nil
-	})
+		if ss != nil {
+			logErr := logPodLogs(context.TODO(), ss, cluster, sb, t)
+			if logErr != nil {
+				t.Logf("error logging the pods %v", logErr)
+			}
+		}
+		err = errors.Wrapf(err, "error waiting for test")
+	}
 	require.NoError(t, err)
 }
 
@@ -119,6 +117,10 @@ func requireDbContainersToUseImage(t *testing.T, sb testenv.DiffingSandbox, cr *
 
 		return res, nil
 	})
+
+	if err != nil {
+		t.Logf("pods are not running correct container version")
+	}
 
 	require.NoError(t, err)
 }
@@ -146,6 +148,7 @@ func clusterIsInitialized(t *testing.T, sb testenv.DiffingSandbox, name string) 
 	}
 
 	if !cmp.Equal(expectedConditions, actualConditions) {
+		t.Logf("cluster is not initialized")
 		return false, nil
 	}
 
@@ -174,6 +177,7 @@ func clusterIsDecommissioned(t *testing.T, sb testenv.DiffingSandbox, name strin
 		actualConditions[i].LastTransitionTime = emptyTime
 	}
 	if !cmp.Equal(expectedConditions, actualConditions) {
+		t.Logf("cluster is not decomissioned")
 		return false, nil
 	}
 
@@ -287,6 +291,9 @@ func requireDecommissionNode(t *testing.T, sb testenv.DiffingSandbox, b testutil
 		}
 		return true, nil
 	})
+	if err != nil {
+		t.Log("timed out waiting for requiring deco'ed node")
+	}
 	require.NoError(t, err)
 }
 
@@ -397,6 +404,10 @@ func requirePVCToResize(t *testing.T, sb testenv.DiffingSandbox, b testutil.Clus
 
 		return resized, nil
 	})
+
+	if err != nil {
+		t.Logf("timed out waiting for PVCs to resize")
+	}
 	require.NoError(t, err)
 }
 
@@ -476,6 +487,53 @@ func logPods(ctx context.Context, sts *appsv1.StatefulSet, cluster *resource.Clu
 				t.Logf("pods-condition=%v\n", podInfo.Status.Conditions)
 			}
 		*/
+	}
+
+	return nil
+}
+
+func logPodLogs(ctx context.Context, sts *appsv1.StatefulSet, cluster *resource.Cluster,
+	sb testenv.DiffingSandbox, t *testing.T) error {
+	// create a new clientset to talk to k8s
+	clientset, err := kubernetes.NewForConfig(sb.Mgr.GetConfig())
+	if err != nil {
+		return err
+	}
+
+	// the LableSelector I thought worked did not
+	// so I just get all of the Pods in a NS
+	options := metav1.ListOptions{
+		//LabelSelector: "app=" + cluster.StatefulSetName(),
+	}
+
+	// Get all pods
+	podList, err := clientset.CoreV1().Pods(sts.Namespace).List(ctx, options)
+	if err != nil {
+		return err
+	}
+
+	if len(podList.Items) == 0 {
+		t.Log("no pods found")
+	}
+
+	// Print out pretty into on the Pods
+	for _, podInfo := range (*podList).Items {
+		t.Logf("pods-name=%v\n", podInfo.Name)
+		t.Logf("pods-status=%v\n", podInfo.Status.Phase)
+		t.Logf("pods-condition=%v\n", podInfo.Status.Conditions)
+		/*
+			// TODO if pod is running but not ready for some period get pod logs
+			if kube.IsPodReady(&podInfo) {
+				t.Logf("pods-condition=%v\n", podInfo.Status.Conditions)
+			}
+		*/
+		log, err := getPodLog(ctx, podInfo.Name, sts.Namespace, clientset)
+
+		if err != nil {
+			return err
+		}
+
+		t.Log(log)
 	}
 
 	return nil
