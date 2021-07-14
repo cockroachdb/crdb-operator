@@ -267,11 +267,11 @@ spec:
         - name: cockroach-operator
           image: cockroachdb/cockroach-operator:{{ .OperatorVersion }}
           imagePullPolicy: IfNotPresent
-          # different new features are commented out below
+          # new alpha features are disabled via feature gates
           # uncomment the feature-gates argument to enable the feature
           args:
             # - feature-gates
-            # - AutoPrunePVC=true
+            # - AutoPrunePVC=true,AffinityRules=true
             # the below log level accepts "info" "debug" "warn" or "error"
             - -zap-log-level
             - info
