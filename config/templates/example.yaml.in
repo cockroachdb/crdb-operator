@@ -42,3 +42,5 @@ spec:
   image:
     name: cockroachdb/cockroach:{{ .LatestStableCrdbVersion }}
   nodes: 3
+  additionalLabels:
+    crdb: is-cool
